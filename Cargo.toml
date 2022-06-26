@@ -1,0 +1,7 @@
+[workspace]
+members = [
+  "libs/chronicle-server",
+
+  # Example
+  "example/example-chronicle-server",
+]
