@@ -1,6 +1,5 @@
-use std::io::{Read, Write};
+use chronicle_common::request::Request;
 use std::net::TcpListener;
-use std::str;
 
 pub struct Server {
     port: i32,
@@ -17,15 +16,7 @@ impl Server {
         for stream in self.listener.incoming() {
             let mut stream = stream.unwrap();
             println!("Connection from {}", stream.peer_addr().unwrap());
-            let mut buffer = [0; 1024];
-            loop {
-                let nbytes = stream.read(&mut buffer).unwrap();
-                println!("bytes: {:?}", buffer);
-                let http = str::from_utf8(&buffer).unwrap();
-                println!("http: {:?}", http);
-                stream.write(&buffer[..nbytes]).unwrap();
-                stream.flush().unwrap();
-            }
+            let request = Request::parse_stream_to_request(&mut stream);
         }
     }
 }
