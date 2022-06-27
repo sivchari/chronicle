@@ -4,19 +4,21 @@ use std::str;
 
 struct RequestHeader {}
 
+const GET: &str = "GET";
+
 enum RequestMethod {
     GET,
 }
 
 pub struct Request {
     method: RequestMethod,
-    url: String,
+    pub url: String,
     header: RequestHeader,
 }
 
 impl Request {
     pub fn parse_stream_to_request(stream: &mut TcpStream) -> Self {
-        let mut buffer = [0; 1024];
+        let mut buffer = [0; 2048];
         loop {
             let nbytes = stream.read(&mut buffer).unwrap();
             println!("bytes:{:?}", buffer);
@@ -75,5 +77,6 @@ fn parse_url(_idx: &mut usize, buffer: &[u8]) -> String {
 
     let g = String::from("GET");
     *_idx = idx + 1;
-    url
+
+    return url;
 }
