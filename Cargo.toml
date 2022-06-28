@@ -1,6 +1,9 @@
 [workspace]
 members = [
   "libs/chronicle-server",
+  "libs/chronicle-client",
+  "libs/chronicle-common",
+  "libs/chronicle-cli",
 
   # Example
   "example/example-chronicle-server",
