@@ -5,9 +5,25 @@ use std::str;
 struct RequestHeader {}
 
 const GET: &str = "GET";
+const POST: &str = "POST";
+const DELETE: &str = "DELETE";
+const PUT: &str = "PUT";
+const PATCH: &str = "PATCH";
+const OPTIONS: &str = "OPTIONS";
+const HEAD: &str = "HEAD";
+const CONNECT: &str = "CONNECT";
+const TRACE: &str = "TRACE";
 
 pub enum RequestMethod {
     GET,
+    POST,
+    DELETE,
+    PUT,
+    PATCH,
+    OPTIONS,
+    HEAD,
+    CONNECT,
+    TRACE,
 }
 
 pub struct Request {
@@ -26,9 +42,6 @@ impl Request {
             let mut idx = 0;
             let method = parse_method(&mut idx, &buffer);
             let url = parse_url(&mut idx, &buffer);
-            match method {
-                RequestMethod::GET => println!("GET"),
-            };
             return Self {
                 method,
                 url,
@@ -49,7 +62,15 @@ impl Request {
 
     pub fn print(&self) -> String {
         let method = match self.method {
-            RequestMethod::GET => "GET",
+            RequestMethod::GET => GET,
+            RequestMethod::POST => POST,
+            RequestMethod::PUT => PUT,
+            RequestMethod::PATCH => PATCH,
+            RequestMethod::HEAD => HEAD,
+            RequestMethod::DELETE => DELETE,
+            RequestMethod::OPTIONS => OPTIONS,
+            RequestMethod::CONNECT => CONNECT,
+            RequestMethod::TRACE => TRACE,
         };
         let url = &self.url;
         String::from(format!(
@@ -76,8 +97,22 @@ fn parse_method(_idx: &mut usize, buffer: &[u8]) -> RequestMethod {
     let g = String::from("GET");
     *_idx = idx + 1;
 
+    let method: &str = &method;
+
     match method {
-        g => RequestMethod::GET,
+        GET => RequestMethod::GET,
+        POST => RequestMethod::POST,
+        HEAD => RequestMethod::HEAD,
+        DELETE => RequestMethod::DELETE,
+        PUT => RequestMethod::PUT,
+        PATCH => RequestMethod::PATCH,
+        OPTIONS => RequestMethod::OPTIONS,
+        TRACE => RequestMethod::TRACE,
+        CONNECT => RequestMethod::CONNECT,
+        _ => panic!(
+            "method should be GET or POST or HEAD or ...., but got {:?}",
+            method
+        ),
     }
 }
 
