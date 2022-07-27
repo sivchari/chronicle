@@ -20,7 +20,7 @@ impl Url {
         idx += 3;
 
         let protocol = match &protocol[..] {
-            "http:" => Protocol::http,
+            "http:" => Protocol::Http,
             _ => panic!("{}", protocol),
         };
 
@@ -55,6 +55,6 @@ const https: &str = "https:";
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Protocol {
-    http,
-    https,
+    Http,
+    Https,
 }
