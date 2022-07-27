@@ -14,8 +14,8 @@ impl Client {
         return Self {};
     }
 
-    pub fn get(url: String) {
-        let url = Url::new(&url);
+    pub fn get(url: String) -> Response {
+        let url = Url::new(&Self::validate_url(url));
 
         let request = Request::build(url.pathname, RequestMethod::GET, url.host);
         let host = request.host.clone();
@@ -25,11 +25,39 @@ impl Client {
         stream.write(request);
         stream.write(&[0]);
         let response = Response::parse_stream_to_response(&mut stream);
-        response.print();
+        response
     }
 
     fn connect(host: String) -> TcpStream {
-        let stream = TcpStream::connect(host).expect("Could not connect.");
+        let stream = TcpStream::connect(format!("{}:{}", host, "80"));
+        let stream = stream.unwrap();
         stream
+    }
+
+    fn validate_url(url: String) -> String {
+        if url.ends_with("/") {
+            url
+        } else {
+            let mut url = url.clone();
+            url.push('/');
+            url
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn it_works() {
+        let response = Client::get("http://example.com/".to_string());
+        assert_eq!(response.status_code, 200);
+    }
+
+    #[test]
+    fn it_works_with_url_not_ending_with_slash() {
+        let response = Client::get("http://example.com".to_string());
+        assert_eq!(response.status_code, 200);
     }
 }

@@ -112,6 +112,6 @@ fn match_status(status_code: u32) -> String {
     match status_code {
         200 => "OK".to_string(),
         404 => "Not Found".to_string(),
-        _ => panic!(""),
+        _ => panic!("status code got {:?}", status_code),
     }
 }

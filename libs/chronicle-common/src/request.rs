@@ -94,7 +94,6 @@ fn parse_method(_idx: &mut usize, buffer: &[u8]) -> RequestMethod {
         idx += 1;
     }
 
-    let g = String::from("GET");
     *_idx = idx + 1;
 
     let method: &str = &method;
