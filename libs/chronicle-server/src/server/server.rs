@@ -5,7 +5,7 @@ use std::io::Write;
 use std::net::TcpListener;
 
 pub struct Server {
-    port: i32,
+    pub port: i32,
     listener: TcpListener,
     handlers: HashMap<String, fn(Request, &mut Response)>,
 }
@@ -34,8 +34,8 @@ impl Server {
             callback_handler(request, &mut response);
             let response = response.print();
             let response = response.as_bytes();
-            stream.write(response);
-            stream.flush();
+            stream.write(response).unwrap();
+            stream.flush().unwrap();
         }
     }
 }

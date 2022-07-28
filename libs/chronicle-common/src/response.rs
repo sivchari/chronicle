@@ -3,7 +3,7 @@ use std::net::TcpStream;
 use std::str;
 
 pub struct Response {
-    version: HTTPVersion,
+    pub version: HTTPVersion,
     pub status_code: u32,
     pub body: String,
 }
@@ -19,7 +19,7 @@ impl Response {
 
     pub fn parse_stream_to_response(stream: &mut TcpStream) -> Self {
         let mut buffer = Vec::new();
-        let nbytes = stream.read_to_end(&mut buffer).unwrap();
+        stream.read_to_end(&mut buffer).unwrap();
 
         let mut idx = 0;
 
@@ -98,15 +98,7 @@ Content-Type: text/html
     }
 }
 
-enum HTTPVersion {
+pub enum HTTPVersion {
     HttpOnePointOne,
     HttpOnePointZero,
-}
-
-fn match_status(status_code: u32) -> String {
-    match status_code {
-        200 => "OK".to_string(),
-        404 => "Not Found".to_string(),
-        _ => panic!("status code got {:?}", status_code),
-    }
 }

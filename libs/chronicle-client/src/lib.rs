@@ -1,9 +1,8 @@
 use crate::url::{Protocol, Url};
 use chronicle_common::request::{Request, RequestMethod};
 use chronicle_common::response::Response;
-use std::io::{Read, Write};
+use std::io::Write;
 use std::net::TcpStream;
-use std::str;
 
 mod url;
 
@@ -18,12 +17,11 @@ impl Client {
         let url = Url::new(&Self::validate_url(url));
 
         let request = Request::build(url.pathname.clone(), RequestMethod::GET, url.host.clone());
-        let host = request.host.clone();
         let request = request.print();
         let mut stream = Client::connect(url);
         let request = request.as_bytes();
-        stream.write(request);
-        stream.write(&[0]);
+        stream.write(request).unwrap();
+        stream.write(&[0]).unwrap();
         let response = Response::parse_stream_to_response(&mut stream);
         response
     }
@@ -36,9 +34,8 @@ impl Client {
 
     fn make_connection_port(url: Url) -> String {
         let port = match url.protocol {
-            Protocol::Http=> "80",
-            Protocol::Https => "443",
-            _ => panic!("unsupported protocol {:?}", url.protocol),
+            Protocol::Http => "80",
+            // Protocol::Https => "443",
         };
 
         format!("{}:{}", url.host, port)

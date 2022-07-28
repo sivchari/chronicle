@@ -2,7 +2,7 @@ use std::io::Read;
 use std::net::TcpStream;
 use std::str;
 
-struct RequestHeader {}
+pub struct RequestHeader {}
 
 const GET: &str = "GET";
 const POST: &str = "POST";
@@ -30,15 +30,14 @@ pub struct Request {
     method: RequestMethod,
     pub url: String,
     pub host: String,
-    header: RequestHeader,
+    pub header: RequestHeader,
 }
 
 impl Request {
     pub fn parse_stream_to_request(stream: &mut TcpStream) -> Self {
         let mut buffer = [0; 2048];
         loop {
-            let nbytes = stream.read(&mut buffer).unwrap();
-            let http = str::from_utf8(&buffer).unwrap();
+            stream.read(&mut buffer).unwrap();
             let mut idx = 0;
             let method = parse_method(&mut idx, &buffer);
             let url = parse_url(&mut idx, &buffer);
@@ -124,7 +123,6 @@ fn parse_url(_idx: &mut usize, buffer: &[u8]) -> String {
         idx += 1;
     }
 
-    let g = String::from("GET");
     *_idx = idx + 1;
 
     return url;

@@ -50,11 +50,8 @@ impl Url {
     }
 }
 
-const http: &str = "http:";
-const https: &str = "https:";
-
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Protocol {
     Http,
-    Https,
+    // Https,
 }
