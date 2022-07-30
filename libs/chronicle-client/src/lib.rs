@@ -1,24 +1,27 @@
-use crate::url::{Protocol, Url};
 use chronicle_common::request::{Request, RequestMethod};
 use chronicle_common::response::Response;
-use std::io::Write;
-use std::net::TcpStream;
+use chronicle_common::stream::ApplicationStream;
+use chronicle_common::tls::TlsConnector;
+use chronicle_common::url::Url;
 
-mod url;
-
-pub struct Client {}
+pub struct Client {
+    tls_connector: TlsConnector,
+}
 
 impl Client {
     pub fn build() -> Self {
-        return Self {};
+        return Self {
+            tls_connector: TlsConnector::new(),
+        };
     }
 
     pub fn get(url: String) -> Response {
-        let url = Url::new(&Self::validate_url(url));
+        let url = Url::new(&url);
 
         let request = Request::build(url.pathname.clone(), RequestMethod::GET, url.host.clone());
         let request = request.print();
-        let mut stream = Client::connect(url);
+        let client = Client::build();
+        let mut stream = client.connect(url);
         let request = request.as_bytes();
         stream.write(request).unwrap();
         stream.write(&[0]).unwrap();
@@ -26,29 +29,8 @@ impl Client {
         response
     }
 
-    fn connect(url: Url) -> TcpStream {
-        let stream = TcpStream::connect(Self::make_connection_port(url));
-        let stream = stream.unwrap();
-        stream
-    }
-
-    fn make_connection_port(url: Url) -> String {
-        let port = match url.protocol {
-            Protocol::Http => "80",
-            // Protocol::Https => "443",
-        };
-
-        format!("{}:{}", url.host, port)
-    }
-
-    fn validate_url(url: String) -> String {
-        if url.ends_with("/") {
-            url
-        } else {
-            let mut url = url.clone();
-            url.push('/');
-            url
-        }
+    fn connect(&self, url: Url) -> ApplicationStream {
+        ApplicationStream::new(&url, &self.tls_connector)
     }
 }
 
@@ -59,6 +41,12 @@ mod tests {
     #[test]
     fn it_works() {
         let response = Client::get("http://example.com/".to_string());
+        assert_eq!(response.status_code, 200);
+    }
+
+    #[test]
+    fn it_works_with_https() {
+        let response = Client::get("https://github.com/".to_string());
         assert_eq!(response.status_code, 200);
     }
 

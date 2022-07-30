@@ -21,12 +21,17 @@ impl Url {
 
         let protocol = match &protocol[..] {
             "http:" => Protocol::Http,
+            "https:" => Protocol::Https,
             _ => panic!("{}", protocol),
         };
 
         let mut host = String::from("");
 
-        while href_bytes[idx] != b'/' {
+        while href_bytes.len() > idx
+            && href_bytes[idx] != b'/'
+            && href_bytes[idx] != b'?'
+            && href_bytes[idx] != b'#'
+        {
             host.push(href_bytes[idx] as char);
             idx += 1;
         }
@@ -38,6 +43,12 @@ impl Url {
             idx += 1;
         }
 
+        let pathname = if pathname.len() == 0 {
+            "/".to_string()
+        } else {
+            pathname
+        };
+
         let origin = format!("{}//{}", "http:", host);
 
         return Self {
@@ -48,10 +59,14 @@ impl Url {
             pathname,
         };
     }
+
+    pub fn is_https(&self) -> bool {
+        self.protocol == Protocol::Https
+    }
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Protocol {
     Http,
-    // Https,
+    Https,
 }
